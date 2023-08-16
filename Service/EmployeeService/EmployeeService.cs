@@ -14,9 +14,30 @@ namespace WebApi.Service.EmployeeService
         {
             _context = context;
         }
-        public Task<ServiceResponse<List<EmployeeModel>>> CreateEmployee(EmployeeModel newEmployee)
+        public async Task<ServiceResponse<List<EmployeeModel>>> CreateEmployee(EmployeeModel newEmployee)
         {
-            throw new NotImplementedException();
+            ServiceResponse<List<EmployeeModel>> serviceResponse = new ServiceResponse<List<EmployeeModel>>();
+
+            try
+            {
+                if (newEmployee == null) 
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "inform data!";
+                    serviceResponse.Success = false;
+                }
+                _context.Add(newEmployee);
+                await _context.SaveChangesAsync();
+
+                serviceResponse.Data = _context.Employees.ToList();
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Message = ex.Message;
+                serviceResponse.Success = false;
+            }
+
+            return serviceResponse;
         }
 
         public Task<ServiceResponse<List<EmployeeModel>>> DeleteEmployee(int id)
@@ -24,9 +45,28 @@ namespace WebApi.Service.EmployeeService
             throw new NotImplementedException();
         }
 
-        public Task<ServiceResponse<EmployeeModel>> GetEmployeeById(int id)
+        public async Task<ServiceResponse<EmployeeModel>> GetEmployeeById(int id)
         {
-            throw new NotImplementedException();
+            ServiceResponse<EmployeeModel> serviceResponse = new ServiceResponse<EmployeeModel>();
+
+            try
+            {
+                EmployeeModel employee = _context.Employees.FirstOrDefault(x => x.Id == id);
+                if (employee == null) 
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "User not found";
+                    serviceResponse.Success = false;
+                }
+                serviceResponse.Data = employee;
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Message = ex.Message;
+                serviceResponse.Success = false;
+            }
+
+            return serviceResponse;
         }
 
         public async Task<ServiceResponse<List<EmployeeModel>>> GetEmployees()
