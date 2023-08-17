@@ -32,5 +32,29 @@ namespace WebApi.Controllers
         {
             return Ok(await _employeeInterface.CreateEmployee(newEmployee));
         }
+
+        [HttpPut]
+        public async Task<ActionResult<ServiceResponse<List<EmployeeModel>>>> UpdateEmployee(EmployeeModel editEmployee)
+        {
+            ServiceResponse<List<EmployeeModel>> serviceResponse = await _employeeInterface.UpdateEmployee(editEmployee);
+
+            return Ok(serviceResponse);
+        }
+
+        [HttpPut("inactiveEmployee")]
+        public async Task<ActionResult<ServiceResponse<List<EmployeeModel>>>> InactiveEmployee(int id)
+        {
+            ServiceResponse<List<EmployeeModel>> serviceResponse = await _employeeInterface.InactiveEmployee(id);
+
+            return Ok(serviceResponse);
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult<ServiceResponse<List<EmployeeModel>>>> DeleteEmployee(int id)
+        {
+            ServiceResponse<List<EmployeeModel>> serviceResponse = await _employeeInterface.DeleteEmployee(id);
+
+            return Ok(serviceResponse);
+        }
     }
 }

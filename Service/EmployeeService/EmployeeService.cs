@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using WebApi.DataContext;
 using WebApi.Models;
 
@@ -25,7 +26,13 @@ namespace WebApi.Service.EmployeeService
                     serviceResponse.Data = null;
                     serviceResponse.Message = "inform data!";
                     serviceResponse.Success = false;
+
+                    return serviceResponse;
                 }
+
+                newEmployee.CreationDate = DateTime.Now.ToLocalTime();
+                newEmployee.ChangeDate = DateTime.Now.ToLocalTime();
+
                 _context.Add(newEmployee);
                 await _context.SaveChangesAsync();
 
@@ -40,9 +47,35 @@ namespace WebApi.Service.EmployeeService
             return serviceResponse;
         }
 
-        public Task<ServiceResponse<List<EmployeeModel>>> DeleteEmployee(int id)
+        public async Task<ServiceResponse<List<EmployeeModel>>> DeleteEmployee(int id)
         {
-            throw new NotImplementedException();
+            ServiceResponse<List<EmployeeModel>> serviceResponse = new ServiceResponse<List<EmployeeModel>>();
+
+            try
+            {
+                EmployeeModel employee = _context.Employees.FirstOrDefault(x => x.Id == id);
+
+                if (employee == null) 
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "User not found!";
+                    serviceResponse.Success = false;
+
+                    return serviceResponse;
+                }
+
+                _context.Employees.Remove(employee);
+                await _context.SaveChangesAsync();
+
+                serviceResponse.Data = _context.Employees.ToList();
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Message = ex.Message;
+                serviceResponse.Success = false;
+            }
+
+            return serviceResponse;
         }
 
         public async Task<ServiceResponse<EmployeeModel>> GetEmployeeById(int id)
@@ -91,14 +124,66 @@ namespace WebApi.Service.EmployeeService
             return serviceResponse;
         }
 
-        public Task<ServiceResponse<List<EmployeeModel>>> InactiveEmployee(int id)
+        public async Task<ServiceResponse<List<EmployeeModel>>> InactiveEmployee(int id)
         {
-            throw new NotImplementedException();
+            ServiceResponse<List<EmployeeModel>> serviceResponse = new ServiceResponse<List<EmployeeModel>>();
+
+            try
+            {
+                EmployeeModel employee = _context.Employees.FirstOrDefault(x => x.Id == id);
+
+                if (employee == null) 
+                { 
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "User not found";
+                    serviceResponse.Success = false;
+                }
+
+                employee.Active = false;
+                employee.ChangeDate = DateTime.Now.ToLocalTime();
+
+                _context.Employees.Update(employee);
+                await _context.SaveChangesAsync();
+
+                serviceResponse.Data = _context.Employees.ToList();
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Message = ex.Message;
+                serviceResponse.Success = false;
+            }
+
+            return serviceResponse;
         }
 
-        public Task<ServiceResponse<List<EmployeeModel>>> UpdateEmployee(EmployeeModel editEmployee)
+        public async Task<ServiceResponse<List<EmployeeModel>>> UpdateEmployee(EmployeeModel editEmployee)
         {
-            throw new NotImplementedException();
+            ServiceResponse<List<EmployeeModel>> serviceResponse = new ServiceResponse<List<EmployeeModel>>();
+
+            try
+            {
+                EmployeeModel employee = _context.Employees.AsNoTracking().FirstOrDefault(x => x.Id == editEmployee.Id);
+
+                if (employee == null) 
+                { 
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "User not found";
+                    serviceResponse.Success = false;
+                }
+
+                employee.ChangeDate = DateTime.Now.ToLocalTime();
+                _context.Employees.Update(editEmployee);
+                await _context.SaveChangesAsync();
+
+                serviceResponse.Data = _context.Employees.ToList();
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Message = ex.Message;
+                serviceResponse.Success = false;
+            }
+
+            return serviceResponse;
         }
     }
 }
