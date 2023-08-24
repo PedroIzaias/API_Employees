@@ -5,7 +5,8 @@ using WebApi.Service.EmployeeService;
 
 namespace WebApi.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
+    [ApiController]
     public class EmployeeController : Controller
     {
         private readonly IEmployeeInterface _employeeInterface;
