@@ -27,6 +27,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Add CORS here
+app.UseCors(builder => builder
+    .WithOrigins("http://localhost:4200") // Replace with the actual origin of your Angular app
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+);
+
 app.UseAuthorization();
 
 app.MapControllers();

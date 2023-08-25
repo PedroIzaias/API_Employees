@@ -2,7 +2,7 @@
     <button>register new employee</button>
     <div class="input-box">
         <label>Search:</label>
-        <input type="text" placeholder="What record are you looking for?">
+        <input type="text" placeholder="What record are you looking for?" (input)="search($event)">
     </div>
 </div>
 
@@ -17,15 +17,20 @@
             <th></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody *ngFor="let employee of employees">
         <tr>
             <td>
-                <img src="assets/imgs/Active.png" alt="" style="height: 20px;">
-                <img src="assets/imgs/Inactive.png" alt="" style="height: 20px;">
+                <div *ngIf="employee.active == true; else inactive">
+                    <img src="assets/imgs/Active.png" alt="" style="height: 20px;">
+                </div>
+
+                <ng-template #inactive>
+                    <img src="assets/imgs/Inactive.png" alt="" style="height: 20px;">
+                </ng-template>
             </td>
-            <td>José</td>
-            <td>Carlos</td>
-            <td>RH</td>
+            <td>{{ employee.name }}</td>
+            <td>{{ employee.lastname }}</td>
+            <td>{{ employee.department }}</td>
             <td>
                 <button>Edit</button>
                 <button>Details</button>
